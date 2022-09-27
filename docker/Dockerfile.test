@@ -1,57 +1,30 @@
-FROM datajoint/djbase:py3.9-debian-fcd8909
+FROM datajoint/djbase:py3.9-debian-8eb1715
 
+# ARG GITHUB_USERNAME=datajoint # tried moving to ENV
 USER anaconda:anaconda
 
-COPY ./workflow-calcium-imaging/docker/apt_requirements.txt /tmp/
+COPY ./workflow-optogenetics/docker/apt_requirements.txt /tmp/
 RUN /entrypoint.sh echo "Installed dependencies."
 
-# Install Caiman
-RUN git clone --branch master https://github.com/datajoint-company/CaImAn 
-WORKDIR /main/CaImAn
-RUN conda install -n base -c conda-forge -y mamba
-RUN /bin/bash -c 'mamba env update --n base --file environment.yml' 
-# Suite2p requires np.__version__ == 1.21
-RUN pip install numpy==1.21
-RUN pip install .
+WORKDIR /main/workflow-optogenetics
 
-WORKDIR /main
+# Always get interface/djarchive
+RUN pip install --no-deps "element-interface@git+https://github.com/datajoint/element-interface"
+RUN pip install --no-deps "djarchive-client@git+https://github.com/datajoint/djarchive-client"
 
-# Option 1 - Install DataJoint's remote fork of the workflow and elements
-# RUN git clone https://github.com/datajoint/workflow-calcium-imaging.git /main/
+# Always move local - conditional install in setup.sh
+COPY --chown=anaconda:anaconda ./element-lab/ /main/element-lab/
+COPY --chown=anaconda:anaconda ./element-animal/ /main/element-animal/
+COPY --chown=anaconda:anaconda ./element-session/ /main/element-session/
+COPY --chown=anaconda:anaconda ./element-event/ /main/element-event/
+COPY --chown=anaconda:anaconda ./element-interface/ /main/element-interface/
+COPY --chown=anaconda:anaconda ./element-optogenetics/ /main/element-optogenetics/
+COPY --chown=anaconda:anaconda ./workflow-optogenetics/ /main/workflow-optogenetics/
 
-# Option 2 - Install user's remote fork of element and workflow
-#            or an unreleased version of the element
-# RUN pip install git+https://github.com/<user>/element-lab.git
-# RUN pip install git+https://github.com/<user>/element-animal.git
-# RUN pip install git+https://github.com/<user>/element-session.git
-# RUN pip install "element-interface[scanreader,sbxreader,image_converter,suite2p]@git+https://github.com/<user>/element-interface"
-# RUN pip install git+https://github.com/<user>/element-calcium-imaging.git
-# RUN git clone https://github.com/<user>/workflow-calcium-imaging.git /main/workflow-calcium-imaging
-
-# Option 3 - Install user's local fork of element and workflow
-RUN mkdir /main/element-lab \
-          /main/element-animal \
-          /main/element-session \
-          /main/element-interface \
-          /main/element-calcium-imaging \
-          /main/workflow-calcium-imaging
-
-COPY --chown=anaconda:anaconda ./element-lab /main/element-lab
-COPY --chown=anaconda:anaconda ./element-animal /main/element-animal
-COPY --chown=anaconda:anaconda ./element-session /main/element-session
-COPY --chown=anaconda:anaconda ./element-interface /main/element-interface
-COPY --chown=anaconda:anaconda ./element-calcium-imaging /main/element-calcium-imaging
-COPY --chown=anaconda:anaconda ./workflow-calcium-imaging /main/workflow-calcium-imaging
-
-RUN pip install -e /main/element-lab
-RUN pip install -e /main/element-animal
-RUN pip install -e /main/element-session
-RUN pip install -e /main/element-interface[scanreader,sbxreader,image_converter,suite2p]
-RUN pip install -e /main/element-calcium-imaging
-RUN rm -f /main/workflow-calcium-imaging/dj_local_conf.json
-
-# Install the workflow
-RUN pip install /main/workflow-calcium-imaging
-RUN pip install -r /main/workflow-calcium-imaging/requirements_test.txt
-
-WORKDIR /main/workflow-calcium-imaging
+# Conditional install - local-all, local-dlc, or git
+COPY --chown=anaconda:anaconda ./workflow-optogenetics/docker/setup.sh /main/
+COPY --chown=anaconda:anaconda ./workflow-optogenetics/docker/.env /main/
+RUN chmod 755 /main/setup.sh
+RUN chmod 755 /main/.env
+RUN /main/setup.sh 
+RUN rm -f ./dj_local_conf.json

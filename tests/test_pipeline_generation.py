@@ -1,19 +1,23 @@
-from . import dj_config, pipeline
+__all__ = ["pipeline"]
 
 
-def test_generate_pipeline(pipeline):
-    subject = pipeline['subject']
-    opto = pipeline['opto']
-    session = pipeline['session']
-    Equipment = pipeline['Equipment']
+def test_upstream_pipeline(pipeline):
+    session = pipeline["session"]
+    subject = pipeline["subject"]
 
-    subject_tbl, *_ = session.Session.parents(as_objects=True)
+    # test connection Subject->Session
+    assert subject.Subject.full_table_name == session.Session.parents()[0]
 
-    # test elements connection from lab, subject to Session
-    assert subject_tbl.full_table_name == subject.Subject.full_table_name
 
-    # test elements connection from Session to opto
-    session_tbl, equipment_tbl, _ = opto.TABLE.parents(as_objects=True)
-    assert session_tbl.full_table_name == session.Session.full_table_name
-    assert equipment_tbl.full_table_name == Equipment.full_table_name
-    assert 'mask_npix' in opto.TABLE.heading.secondary_attributes
+def test_opto_pipeline(pipeline):
+    opto = pipeline["opto"]
+
+    # test connection opto.VideoRec -> schema children
+    opto_children_links = opto.TABLE.children()
+    opto_children_list = [
+        opto.TABLE.File,
+    ]
+    for child in opto_children_list:
+        assert (
+            child.full_table_name in opto_children_links
+        ), f"opto.TABLE.children() did not include {child.full_table_name}"
