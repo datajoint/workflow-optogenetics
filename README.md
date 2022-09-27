@@ -1,46 +1,40 @@
-# DataJoint Workflow - Calcium Imaging
+# DataJoint Workflow - Optogenetics
 
-Workflow for calcium imaging data acquired with 
-[ScanImage](http://scanimage.vidriotechnologies.com),  
-[Scanbox](https://scanbox.org), or `Nikon NIS` software and processed with 
-[Suite2p](https://github.com/MouseLand/suite2p) or 
-[CaImAn](https://github.com/flatironinstitute/CaImAn).
-
-A complete calcium imaging workflow can be built using the DataJoint Elements.
+A complete optogenetics workflow can be built using the DataJoint Elements.
 + [element-lab](https://github.com/datajoint/element-lab)
 + [element-animal](https://github.com/datajoint/element-animal)
 + [element-session](https://github.com/datajoint/element-session)
-+ [element-calcium-imaging](https://github.com/datajoint/element-calcium-imaging)
++ [element-optogenetics](https://github.com/datajoint/element-optogenetics)
 
 This repository provides demonstrations for:
 1. Set up a workflow using DataJoint Elements (see 
-[workflow_calcium_imaging/pipeline.py](workflow_calcium_imaging/pipeline.py))
+[workflow_optogenetics/pipeline.py](workflow_optogenetics/pipeline.py))
 2. Ingestion of data/metadata based on a predefined file structure, file naming 
 convention, and directory lookup methods (see 
-[workflow_calcium_imaging/paths.py](workflow_calcium_imaging/paths.py)).
+[workflow_optogenetics/paths.py](workflow_optogenetics/paths.py)).
 3. Ingestion of segmentation and deconvolution results.
 
-See the [Element Calcium Imaging documentation](https://elements.datajoint.org/description/calcium_imaging/) for the background information and development timeline.
+<!-- See the [Element optogenetics documentation](https://elements.datajoint.org/description/optogenetics/) for the background information and development timeline. -->
 
 For more information on the DataJoint Elements project, please visit https://elements.datajoint.org.  This work is supported by the National Institutes of Health.
 
 ## Workflow architecture
 
-The calcium imaging workflow presented here uses components from four DataJoint 
+The optogenetics workflow presented here uses components from four DataJoint 
 Elements ([element-lab](https://github.com/datajoint/element-lab), 
 [element-animal](https://github.com/datajoint/element-animal), 
 [element-session](https://github.com/datajoint/element-session), 
-[element-calcium-imaging](https://github.com/datajoint/element-calcium-imaging)) 
+[element-optogenetics](https://github.com/datajoint/element-optogenetics)) 
 assembled together to form a fully functional workflow. 
 
-![element_calcium_imaging](images/attached_calcium_imaging_element.svg)
+<!-- ![element_optogenetics](images/attached_optogenetics_element.svg) -->
 
 ## Installation instructions
 
 + The installation instructions can be found at the
 [DataJoint Elements documentation](https://elements.datajoint.org/usage/install/).
 
-## Interacting with the DataJoint workflow
+<!-- ## Interacting with the DataJoint workflow
 
 + Please refer to the following workflow-specific 
 [Jupyter notebooks](/notebooks) for an in-depth explanation of how to run the 
@@ -49,7 +43,7 @@ workflow ([03-process.ipynb](notebooks/03-process.ipynb)) and explore the data
 
 + See our YouTube tutorial for a walkthrough of the schemas and functions:
 
-    [![YouTube tutorial](https://img.youtube.com/vi/gFLn0GB1L30/0.jpg)](https://www.youtube.com/watch?v=gFLn0GB1L30)
+    [![YouTube tutorial](https://img.youtube.com/vi/gFLn0GB1L30/0.jpg)](https://www.youtube.com/watch?v=gFLn0GB1L30) -->
 
 ## Citation
 
@@ -63,4 +57,4 @@ workflow ([03-process.ipynb](notebooks/03-process.ipynb)) and explore the data
 + DataJoint Elements
     + Yatsenko D, Nguyen T, Shen S, Gunalan K, Turner CA, Guzman R, Sasaki M, Sitonic D, Reimer J, Walker EY, Tolias AS. DataJoint Elements: Data Workflows for Neurophysiology. bioRxiv. 2021 Jan 1. doi: https://doi.org/10.1101/2021.03.30.437358
 
-    + DataJoint Elements ([RRID:SCR_021894](https://scicrunch.org/resolver/SCR_021894)) - Element Calcium Imaging (version `<Enter version number>`)
+    + DataJoint Elements ([RRID:SCR_021894](https://scicrunch.org/resolver/SCR_021894)) - Element optogenetics (version `<Enter version number>`)

@@ -3,7 +3,7 @@ import pathlib
 from pathlib import Path
 from datetime import datetime
 from element_interface.utils import find_full_path, ingest_csv_to_table
-from workflow_calcium_imaging.pipeline import (
+from workflow_optogenetics.pipeline import (
     subject,
     scan,
     session,
@@ -11,7 +11,7 @@ from workflow_calcium_imaging.pipeline import (
     trial,
     event,
 )
-from workflow_calcium_imaging.paths import get_imaging_root_data_dir
+from workflow_optogenetics.paths import get_imaging_root_data_dir
 
 
 def ingest_subjects(

@@ -3,15 +3,10 @@ from element_lab import lab
 from element_animal import subject
 from element_session import session_with_datetime as session
 from element_event import trial, event
-from element_calcium_imaging import scan, imaging
+from element_optogenetics import optogenetics as opto
 from element_lab.lab import Source, Lab, Protocol, User, Location, Project
 from element_animal.subject import Subject
-from .paths import (
-    get_imaging_root_data_dir,
-    get_scan_image_files,
-    get_scan_box_files,
-    get_nd2_files,
-)
+from .paths import get_opto_root_data_dir
 from . import analysis
 
 if "custom" not in dj.config:
@@ -36,10 +31,7 @@ __all__ = [
     "Project",
     "Session",
     "Location",
-    "get_imaging_root_data_dir",
-    "get_scan_image_files",
-    "get_scan_box_files",
-    "get_nd2_files",
+    "get_opto_root_data_dir",
 ]
 
 
