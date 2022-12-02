@@ -2,7 +2,7 @@
 #   COMPOSE_PROJECT_NAME='opto'
 #   TEST_DATA_DIR=<local dir for from_top_tracking>
 #   GITHUB_USERNAME=datajoint
-#   INSTALL_OPTION=local-all, local-opto, or git
+#   INSTALL_OPTION=local-all, local-only, or git
 #   TEST_CMD="pytest" # pytest --dj-{verbose,teardown} False  # options
 #                     # to do nothing, set as "True"
 # export COMPOSE_DOCKER_CLI_BUILD=0 # some machines need for smooth --build

@@ -1,0 +1,2 @@
+session_id,protocol_id,waveform_name,device,wavelength,power,frequency,duration,location_id,ap_location,ml_location,depth,theta,phi,skull_reference,light_intensity,description
+1,1,square_10,OPTG_4,470,30,1,100,1,-7900,-1800,5000,11.5,0,Bregma,10.2,Targeting left dHP or vHP via CA1 pyramidal neurons

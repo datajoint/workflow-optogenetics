@@ -1,8 +1,8 @@
 datajoint>=0.13.0
-element-optogenetics
 element-lab>=0.1.1
 element-animal>=0.1.2
 element-session>=0.1.2
+element-optogenetics 
 element-event @ git+https://github.com/datajoint/element-event.git
 element-interface @ git+https://github.com/datajoint/element-interface.git
 ipykernel>=6.0.1

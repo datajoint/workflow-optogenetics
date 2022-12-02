@@ -4,8 +4,6 @@ from element_animal import subject
 from element_session import session_with_datetime as session
 from element_event import trial, event
 from element_optogenetics import optogenetics as opto
-from element_lab.lab import Source, Lab, Protocol, User, Location, Project
-from element_animal.subject import Subject
 from .paths import get_opto_root_data_dir
 
 if "custom" not in dj.config:
@@ -17,19 +15,10 @@ __all__ = [
     "subject",
     "lab",
     "session",
-    "Equipment",
+    "Device",
     "trial",
     "event",
-    "scan",
     "opto",
-    "Subject",
-    "Source",
-    "Lab",
-    "Protocol",
-    "User",
-    "Project",
-    "Session",
-    "Location",
     "get_opto_root_data_dir",
 ]
 
@@ -42,6 +31,7 @@ subject.activate(db_prefix + "subject", linking_module=__name__)
 
 Session = session.Session
 Experimenter = lab.User
+
 session.activate(db_prefix + "session", linking_module=__name__)
 
 
@@ -50,14 +40,28 @@ session.activate(db_prefix + "session", linking_module=__name__)
 trial.activate(db_prefix + "trial", db_prefix + "event", linking_module=__name__)
 
 
-# Declare table Equipment for use in element_optogenetics --------------
+# Declare table Device for use in element_optogenetics --------------
 
 
 @lab.schema
-class Equipment(dj.Manual):
-    definition = """
-    scanner: varchar(32)
+class Device(dj.Lookup):
+    """Table for managing lab Device.
+
+    Attributes:
+        device ( varchar(32) ): Device short name.
+        modality ( varchar(64) ): Modality for which this device is used.
+        description ( varchar(256) ): Optional. Description of device.
     """
+
+    definition = """
+    device             : varchar(32)
+    ---
+    modality           : varchar(64)
+    description=null   : varchar(256)
+    """
+    contents = [
+        ["OPTG_4", "Optogenetics", "Doric Pulse Sequence Generator"],
+    ]
 
 
 @lab.schema

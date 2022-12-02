@@ -7,18 +7,26 @@ from workflow_optogenetics.pipeline import (
     subject,
     scan,
     session,
-    Equipment,
+    Device,
     trial,
     event,
+    opto,
 )
-from workflow_optogenetics.paths import get_imaging_root_data_dir
 
 
 def ingest_subjects(
-    subject_csv_path="./user_data/subjects.csv", skip_duplicates=True, verbose=True
+    subject_csv_path: str = "./user_data/subjects.csv",
+    skip_duplicates: bool = True,
+    verbose: bool = True,
 ):
-    """
-    Ingest subjects listed in the subject column of ./user_data/subjects.csv
+    """Ingest subjects listed in the subject column of ./user_data/subjects.csv
+
+    Args:
+        subject_csv_path (str, optional): Relative path to subject csv.
+            Defaults to "./user_data/subjects.csv".
+        skip_duplicates (bool, optional): Skips duplicates, see DataJoint insert.
+            Defaults to True.
+        verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
     """
     csvs = [subject_csv_path]
     tables = [subject.Subject()]
@@ -27,120 +35,48 @@ def ingest_subjects(
 
 
 def ingest_sessions(
-    session_csv_path="./user_data/sessions.csv", skip_duplicates=True, verbose=True
+    session_csv_path: str = "./user_data/sessions.csv",
+    skip_duplicates: bool = True,
+    verbose: bool = True,
 ):
-    root_data_dir = get_imaging_root_data_dir()
+    """Ingest sessions from CSV. Defaults to ./user_data/subjects.csv
 
-    # ---------- Insert new "Session" and "Scan" ---------
-    with open(session_csv_path, newline="") as f:
-        input_sessions = list(csv.DictReader(f, delimiter=","))
-
-    # Folder structure: root / subject / session / .tif (raw)
-    session_list, session_dir_list, scan_list, scanner_list = [], [], [], []
-
-    for sess in input_sessions:
-        sess_dir = find_full_path(root_data_dir, Path(sess["session_dir"]))
-
-        # search for either ScanImage or Scanbox files (in that order)
-        for scan_pattern, scan_type, glob_func in zip(
-            ["*.tif", "*.sbx"],
-            ["ScanImage", "Scanbox"],
-            [sess_dir.glob, sess_dir.rglob],
-        ):
-            scan_filepaths = [fp.as_posix() for fp in glob_func(scan_pattern)]
-            if len(scan_filepaths):
-                acq_software = scan_type
-                break
-        else:
-            raise FileNotFoundError(
-                "Unable to identify scan files from the supported "
-                + "acquisition softwares (ScanImage, Scanbox) at: "
-                + f"{sess_dir}"
-            )
-
-        if acq_software == "ScanImage":
-            import scanreader
-            from element_interface import scanimage_utils
-
-            try:  # attempt to read .tif as a scanimage file
-                loaded_scan = scanreader.read_scan(scan_filepaths)
-                recording_time = scanimage_utils.get_scanimage_acq_time(loaded_scan)
-                header = scanimage_utils.parse_scanimage_header(loaded_scan)
-                scanner = header["SI_imagingSystem"].strip("'")
-            except Exception as e:
-                print(f"ScanImage loading error: {scan_filepaths}\n{str(e)}")
-                continue
-        elif acq_software == "Scanbox":
-            import sbxreader
-
-            try:  # attempt to load Scanbox
-                sbx_fp = pathlib.Path(scan_filepaths[0])
-                sbx_meta = sbxreader.sbx_get_metadata(sbx_fp)
-                # read from file when Scanbox support this
-                recording_time = datetime.fromtimestamp(sbx_fp.stat().st_ctime)
-                scanner = sbx_meta.get("imaging_system", "Scanbox")
-            except Exception as e:
-                print(f"Scanbox loading error: {scan_filepaths}\n{str(e)}")
-                continue
-        else:
-            raise NotImplementedError(
-                "Processing scan from acquisition software of "
-                + f"type {acq_software} is not yet implemented"
-            )
-
-        session_key = {"subject": sess["subject"], "session_datetime": recording_time}
-        if session_key not in session.Session():
-            scanner_list.append({"scanner": scanner})
-            session_list.append(session_key)
-            scan_list.append(
-                {
-                    **session_key,
-                    "scan_id": 0,
-                    "scanner": scanner,
-                    "acq_software": acq_software,
-                }
-            )
-
-            session_dir_list.append(
-                {
-                    **session_key,
-                    "session_dir": sess_dir.relative_to(root_data_dir).as_posix(),
-                }
-            )
-    new_equipment = set(val for dic in scanner_list for val in dic.values())
-    if verbose:
-        print(
-            f"\n---- Insert {len(new_equipment)} entry(s) into "
-            + "experiment.Equipment ----"
-        )
-    Equipment.insert(scanner_list, skip_duplicates=skip_duplicates)
-
-    if verbose:
-        print(f"\n---- Insert {len(session_list)} entry(s) into session.Session ----")
-    session.Session.insert(session_list, skip_duplicates=skip_duplicates)
-    session.SessionDirectory.insert(session_dir_list, skip_duplicates=skip_duplicates)
-
-    if verbose:
-        print(f"\n---- Insert {len(scan_list)} entry(s) into scan.Scan ----")
-    scan.Scan.insert(scan_list, skip_duplicates=skip_duplicates)
-
-    if verbose:
-        print("\n---- Successfully completed ingest_sessions ----")
+    Args:
+        session_csv_path (str, optional): Relative path to sessions CSV.
+            Defaults to "./user_data/sessions.csv".
+        skip_duplicates (bool, optional): Skips duplicates, see DataJoint insert.
+            Defaults to True.
+        verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
+    """
+    pass
 
 
 def ingest_events(
-    recording_csv_path="./user_data/behavior_recordings.csv",
-    block_csv_path="./user_data/blocks.csv",
-    trial_csv_path="./user_data/trials.csv",
-    event_csv_path="./user_data/events.csv",
-    skip_duplicates=True,
-    verbose=True,
+    recording_csv_path: str = "./user_data/behavior_recordings.csv",
+    block_csv_path: str = "./user_data/blocks.csv",
+    trial_csv_path: str = "./user_data/trials.csv",
+    event_csv_path: str = "./user_data/events.csv",
+    skip_duplicates: bool = True,
+    verbose: bool = True,
 ):
-    """
-    Ingest each level of experiment heirarchy for element-trial:
-        recording, block (i.e., phases of trials), trials (repeated units),
-        events (optionally 0-duration occurances within trial).
-    This ingestion function is duplicated across wf-array-ephys and wf-calcium-imaging
+    """Ingest trial structure: blocks, trials, events
+
+    A recording is one or more blocks (i.e., phases of trials), with trials (repeated
+    units). Events are optionally-instantaneous occurences within trial. This ingestion
+    function is duplicated across multiple DataJoint workflow repositories.
+
+    Args:
+        recording_csv_path (str, optional): Relative path to recording CSV.
+            Defaults to "./user_data/behavior_recordings.csv".
+        block_csv_path (str, optional): Relative path to block CSV.
+            Defaults to "./user_data/blocks.csv".
+        trial_csv_path (str, optional): Relative path to trial CSV.
+            Defaults to "./user_data/trials.csv".
+        event_csv_path (str, optional): Relative path to event CSV.
+            Defaults to "./user_data/events.csv".
+        skip_duplicates (bool, optional): Skips duplicates, see DataJoint insert.
+            Defaults to True.
+        verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
     """
     csvs = [
         recording_csv_path,
@@ -169,7 +105,7 @@ def ingest_events(
         trial.TrialEvent(),
     ]
 
-    # Allow direct insert required bc element-trial has Imported that should be Manual
+    # Allow direct insert required bc element-trial has Imported tables
     ingest_csv_to_table(
         csvs,
         tables,
@@ -179,13 +115,38 @@ def ingest_events(
     )
 
 
-def ingest_alignment(
-    alignment_csv_path="./user_data/alignments.csv", skip_duplicates=True, verbose=True
+def ingest_opto(
+    waveform_csv_path: str = "./user_data/opto_waveform.csv",
+    opto_session_csv_path: str = "./user_data/opto_session.csv",
+    skip_duplicates: bool = True,
+    verbose: bool = True,
 ):
-    """This is duplicated across wf-array-ephys and wf-calcium-imaging"""
+    """Ingest optogenetic stimulation and protocol information.
 
-    csvs = [alignment_csv_path]
-    tables = [event.AlignmentEvent()]
+    Args:
+        waveform_csv_path (str, optional): Relative path to waveform info CSV.
+            Defaults to "./user_data/opto_waveform.csv".
+        opto_session_csv_path (str, optional): Relative path to CSV with opto protocol
+            information, session and session brain location.
+            Defaults to "./user_data/opto_session.csv".
+        skip_duplicates (bool, optional): Skips duplicates, see DataJoint insert.
+            Defaults to True.
+        verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
+    """
+    csvs = [
+        waveform_csv_path,
+        waveform_csv_path,
+        opto_session_csv_path,
+        opto_session_csv_path,
+        opto_session_csv_path,
+    ]
+    tables = [
+        opto.Waveform(),
+        opto.Waveform.Square(),
+        opto.Protocol(),
+        opto.SessionProtocol(),
+        opto.SessionBrainLocation(),
+    ]
 
     ingest_csv_to_table(csvs, tables, skip_duplicates=skip_duplicates, verbose=verbose)
 
@@ -194,4 +155,4 @@ if __name__ == "__main__":
     ingest_subjects()
     ingest_sessions()
     ingest_events()
-    ingest_alignment()
+    ingest_opto()
