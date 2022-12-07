@@ -1,17 +1,21 @@
-import csv
-import pathlib
-from pathlib import Path
-from datetime import datetime
-from element_interface.utils import find_full_path, ingest_csv_to_table
-from workflow_optogenetics.pipeline import (
-    subject,
-    scan,
-    session,
-    Device,
-    trial,
-    event,
-    opto,
-)
+#!/usr/bin/env python
+from element_interface.utils import ingest_csv_to_table
+from .pipeline import lab, subject, surgery, session, trial, event, opto
+
+___all__ = [
+    "subject",
+    "surgery",
+    "session",
+    "trial",
+    "event",
+    "opto",
+    "ingest_csv_to_table",
+    "ingest_subjects",
+    "ingest_sessions",
+    "ingest_events",
+    "ingest_opto",
+    "ingest_all",
+]
 
 
 def ingest_subjects(
@@ -48,7 +52,11 @@ def ingest_sessions(
             Defaults to True.
         verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
     """
-    pass
+
+    csvs = [session_csv_path]
+    tables = [session.Session()]
+
+    ingest_csv_to_table(csvs, tables, skip_duplicates=skip_duplicates, verbose=verbose)
 
 
 def ingest_events(
@@ -116,43 +124,61 @@ def ingest_events(
 
 
 def ingest_opto(
-    waveform_csv_path: str = "./user_data/opto_waveform.csv",
-    opto_session_csv_path: str = "./user_data/opto_session.csv",
+    opto_surgery_csv_path: str = "./user_data/opto_surgeries.csv",
+    opto_session_csv_path: str = "./user_data/opto_sessions.csv",
+    opto_events_csv_path: str = "./user_data/opto_events.csv",
+    waveform_csv_path: str = "./user_data/opto_waveforms.csv",
     skip_duplicates: bool = True,
     verbose: bool = True,
 ):
     """Ingest optogenetic stimulation and protocol information.
 
     Args:
+        opto_survery_csv_path (str, optional): Relative path to implantation info CSV.
+            Defaults to "./user_data/opto_surgeries.csv".
+        opto_session_csv_path (str, optional): Relative path to CSV with opto session
+            information. Defaults to "./user_data/opto_sessions.csv".
+        opto_events_csv_path (str, optional): Relative path to opto events CSV.
+            Defaults to "./user_data/opto_events.csv".
         waveform_csv_path (str, optional): Relative path to waveform info CSV.
-            Defaults to "./user_data/opto_waveform.csv".
-        opto_session_csv_path (str, optional): Relative path to CSV with opto protocol
-            information, session and session brain location.
-            Defaults to "./user_data/opto_session.csv".
+            Defaults to "./user_data/opto_waveforms.csv".
         skip_duplicates (bool, optional): Skips duplicates, see DataJoint insert.
             Defaults to True.
         verbose (bool, optional): Provides insertion info to StdOut. Defaults to True.
     """
     csvs = [
-        waveform_csv_path,
-        waveform_csv_path,
-        opto_session_csv_path,
-        opto_session_csv_path,
-        opto_session_csv_path,
+        waveform_csv_path,  # 1
+        waveform_csv_path,  # 2
+        waveform_csv_path,  # 3
+        opto_surgery_csv_path,  # 4
+        opto_surgery_csv_path,  # 5
+        opto_surgery_csv_path,  # 6
+        opto_surgery_csv_path,  # 7
+        opto_session_csv_path,  # 8
+        opto_events_csv_path,  # 9
     ]
     tables = [
-        opto.Waveform(),
-        opto.Waveform.Square(),
-        opto.Protocol(),
-        opto.SessionProtocol(),
-        opto.SessionBrainLocation(),
+        opto.OptoWaveform(),  # 1
+        opto.OptoWaveform.Square(),  # 2
+        opto.OptoStimParams(),  # 3
+        surgery.CoordinateReference(),  # 4
+        surgery.BrainRegion(),  # 5
+        lab.User(),  # 6
+        surgery.Implantation(),  # 7
+        opto.OptoProtocol(),  # 8
+        opto.OptoEvent(),  # 9
     ]
 
     ingest_csv_to_table(csvs, tables, skip_duplicates=skip_duplicates, verbose=verbose)
 
 
+def ingest_all(skip_duplicates: bool = True, verbose: bool = True):
+    """Run all available available ingestion functions"""
+    ingest_subjects(skip_duplicates=skip_duplicates, verbose=verbose)
+    ingest_sessions(skip_duplicates=skip_duplicates, verbose=verbose)
+    ingest_events(skip_duplicates=skip_duplicates, verbose=verbose)
+    ingest_opto(skip_duplicates=skip_duplicates, verbose=verbose)
+
+
 if __name__ == "__main__":
-    ingest_subjects()
-    ingest_sessions()
-    ingest_events()
-    ingest_opto()
+    ingest_all()

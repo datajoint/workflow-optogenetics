@@ -115,6 +115,7 @@ temp*
 **/.#*
 docker-compose.yml
 Diagram.ipynb
+*swp
 
 # docker
 .env
