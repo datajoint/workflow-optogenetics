@@ -4,33 +4,25 @@ import pytest
 import logging
 from pathlib import Path
 from contextlib import nullcontext
-from element_optogenetics.optogenetics import str_to_bool
 import datajoint as dj
-from element_interface.utils import find_full_path
+from element_interface.utils import ingest_csv_to_table
 from workflow_optogenetics.paths import get_opto_root_data_dir
 from workflow_optogenetics.ingest import (
     ingest_subjects,
     ingest_sessions,
-    ingest_train_params,
-    ingest_train_vids,
-    ingest_model_vids,
-    ingest_model,
+    ingest_events,
+    ingest_opto,
+    ingest_all,
 )
 
 __all__ = [
     "ingest_subjects",
     "ingest_sessions",
-    "ingest_train_params",
-    "ingest_train_vids",
-    "ingest_model_vids",
 ]
 
 # ---------------------- CONSTANTS ---------------------
 
-test_data_project = "from_top_tracking"
-inference_vid = f"{test_data_project}/videos/test.mp4"
-inf_vid_short = f"{test_data_project}/videos/test-2s.mp4"
-model_name = "FromTop-latest"
+logger = logging.getLogger("datajoint")
 
 
 def pytest_addoption(parser):
@@ -115,12 +107,12 @@ class QuietStdOut:
     """If verbose set to false, used to quiet tear_down table.delete prints"""
 
     def __enter__(self):
-        os.environ["DJ_LOG_LEVEL"] = "WARNING"
+        logger.setLevel("WARNING")
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, "w")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        os.environ["DJ_LOG_LEVEL"] = "INFO"
+        logger.setLevel("INFO")
         sys.stdout.close()
         sys.stdout = self._original_stdout
 
@@ -160,52 +152,106 @@ def pipeline(setup):
         from workflow_optogenetics import pipeline
 
     yield {
-        "opto": pipeline.opto,
-        "subject": pipeline.subject,
-        "session": pipeline.session,
         "lab": pipeline.lab,
+        "subject": pipeline.subject,
+        "surgery": pipeline.surgery,
+        "session": pipeline.session,
+        "opto": pipeline.opto,
         "Device": pipeline.Device,
     }
     if _tear_down:
         with verbose_context:
-            pipeline.opto.OptoSession.delete()
+            pipeline.opto.OptoWaveform.delete()
+            pipeline.surgery.BrainRegion.delete()
             pipeline.subject.Subject.delete()
             pipeline.session.Session.delete()
-            pipeline.lab.Lab.delete()
-            pipeline.train.TrainingParamSet.delete()
+            pipeline.lab.User.delete()
 
 
 @pytest.fixture(scope="session")
-def ingest_csvs(setup, test_data, pipeline):
+def ingest_csvs(setup, pipeline):
     """For each input, generates csv in test_user_data_dir and ingests in schema"""
-    # CSV as list of 3: relevant insert func, filename, content
-    all_csvs = [
-        [  # 0
-            ingest_subjects,
-            "subjects.csv",
-            [
-                "subject,sex,subject_birth_date,subject_description,"
-                + "death_date,cull_method",
-                "subject6,M,2020-01-01 00:00:01,manuel,2020-10-03 00:00:01,natural",
+    # CSV as list of 3: filename, relevant tables, content
+    all_csvs = {
+        "subjects.csv": {
+            "tables": [pipeline["subject"].Subject()],
+            "content": [
+                "subject,sex,subject_birth_date,subject_description",
+                "subject3,F,2022-03-03,Optogenetic pilot subject",
             ],
-        ],
-        [  # 1
-            ingest_sessions,
-            "sessions.csv",
-            [
-                "subject,session_datetime,session_dir,session_note",
-                f"subject6,2021-06-01 13:33:33,{test_data_project}/,Model Training",
-                f"subject6,2021-06-02 14:04:22,{test_data_project}/,Test Session",
+        },
+        "sessions.csv": {
+            "tables": [pipeline["session"].Session()],
+            "content": [
+                "subject,session_dir,session_id,session_datetime",
+                "subject3,subject3/opto_session1/,1,2022-04-04 12:13:14",
             ],
-        ],
-    ]
-
+        },
+        "opto_waveforms.csv": {
+            "tables": [
+                pipeline["opto"].OptoWaveform(),
+                pipeline["opto"].OptoWaveform.Square(),
+                pipeline["opto"].OptoStimParams(),
+            ],
+            "content": [
+                "waveform_type,waveform_name,waveform_description,on_proportion,"
+                + "off_proportion,opto_params_id,wavelength,light_intensity,frequency,"
+                + "duration",
+                "square,square_10,Square waveform with 10-90 on-off cycle,.10,"
+                + ".90,1,470,10.2,1,241",
+            ],
+        },
+        "opto_surgeries.csv": {
+            "tables": [
+                pipeline["surgery"].CoordinateReference(),
+                pipeline["surgery"].BrainRegion(),
+                pipeline["lab"].User(),
+                pipeline["surgery"].Implantation(),
+                pipeline["surgery"].Implantation.Coordinate(),
+            ],
+            "content": [
+                "subject,implant_date,reference,region_acronym,region_name,hemisphere,"
+                + "implant_type,ap,ap_ref,ml,ml_ref,dv,dv_ref,theta,phi,user,surgeon,"
+                + "target_region,target_hemisphere",
+                "subject3,2022-04-01 12:13:14,bregma,dHP,Dorsal Hippocampus,left,"
+                + "opto,-7.9,bregma,-1.8,bregma,5,skull_surface,11.5,0,user1,user1,"
+                + "dHP,left",
+            ],
+        },
+        "opto_sessions.csv": {
+            "tables": [
+                pipeline["opto"].OptoProtocol(),
+            ],
+            "content": [
+                "subject,session_id,protocol_id,opto_params_id,implant_date,"
+                + "implant_type,target_region,target_hemisphere",
+                "subject3,1,1,1,2022-04-01 12:13:14,opto,dHP,left",
+            ],
+        },
+        "opto_events.csv": {
+            "tables": [
+                pipeline["opto"].OptoEvent(),
+            ],
+            "content": [
+                "subject,session_id,protocol_id,stim_start_time,stim_end_time",
+                "subject3,1,1,241,482",
+                "subject3,1,1,482,723",
+            ],
+        },
+    }
     # If data in last table, presume didn't tear down last time, skip insert
-    if len(pipeline["opto"].OptoSession()) == 0:
-        for csv_info in all_csvs:
-            csv_path = test_user_data_dir / csv_info[1]
-            write_csv(csv_path, csv_info[2])
-            csv_info[0](csv_path, skip_duplicates=True, verbose=verbose)
+    if len(pipeline["opto"].OptoEvent()) == 0:
+        for csv_filename, csv_dict in all_csvs.items():
+            csv_path = test_user_data_dir / csv_filename  # add prefix for rel path
+            write_csv(csv_path, csv_dict["content"])  # write content at rel path
+            # repeat csv path n times as list to match n tables
+            csv_path_as_list = [str(csv_path)] * len(csv_dict["tables"])
+            ingest_csv_to_table(  # insert csv content into each of n tables
+                csv_path_as_list,
+                csv_dict["tables"],
+                skip_duplicates=True,
+                verbose=verbose,
+            )
 
     yield
 
@@ -214,14 +260,3 @@ def ingest_csvs(setup, test_data, pipeline):
             for csv_info in all_csvs:
                 csv_path = test_user_data_dir / csv_info[1]
                 csv_path.unlink()
-
-
-@pytest.fixture(scope="session")
-def populate_settings():
-    yield dict(display_progress=verbose, reserve_jobs=False, suppress_errors=False)
-
-
-@pytest.fixture()
-def feature(pipeline, populate_settings):
-    """Other feature of pipeline"""
-    yield pipeline["opto"].TABLE.populate(**populate_settings)

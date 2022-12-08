@@ -1,10 +1,5 @@
-""" deeplabcut
-fresh docker:
-    docker run --name wf-opto -p 3306:3306 -e \
-    MYSQL_ROOT_PASSWORD=tutorial datajoint/mysql
-dependencies: pip install pytest pytest-cov
-run all tests:
-    pytest tests/
-run one test, debug:
-    pytest --pdb tests/tests_name.py -k function_name
+"""
+run all: pytest tests/
+run one: pytest --pdb tests/tests_name.py -k function_name   
+options: pytest --dj-verbose True --dj-teardown True --dj-datadir './tests/user_data'
 """

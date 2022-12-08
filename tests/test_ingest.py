@@ -10,18 +10,15 @@ def test_ingest(pipeline, ingest_csvs):
 
     subject = pipeline["subject"]
     session = pipeline["session"]
+    surgery = pipeline["surgery"]
     opto = pipeline["opto"]
 
     table_lengths = [
-        (subject.Subject(), 1, "subject6"),
-        (session.Session(), 2, datetime.datetime(2021, 6, 1, 13, 33, 33)),
-        (opto.TABLE(), 1, "from_top_tracking"),
-        (opto.TABLE(), 3, 0),
-        (
-            opto.TABLE.File(),
-            10,
-            "path/file.ext",
-        ),
+        (subject.Subject(), 1, "subject3"),
+        (session.Session(), 1, datetime.datetime(2022, 4, 4, 12, 13, 14)),
+        (surgery.Implantation.Coordinate(), 1, 11.5),
+        (opto.OptoStimParams(), 1, "square_10"),
+        (opto.OptoEvent(), 2, 482),
     ]
 
     for t in table_lengths:

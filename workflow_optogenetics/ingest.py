@@ -154,8 +154,9 @@ def ingest_opto(
         opto_surgery_csv_path,  # 5
         opto_surgery_csv_path,  # 6
         opto_surgery_csv_path,  # 7
-        opto_session_csv_path,  # 8
-        opto_events_csv_path,  # 9
+        opto_surgery_csv_path,  # 8
+        opto_session_csv_path,  # 9
+        opto_events_csv_path,  # 10
     ]
     tables = [
         opto.OptoWaveform(),  # 1
@@ -165,8 +166,9 @@ def ingest_opto(
         surgery.BrainRegion(),  # 5
         lab.User(),  # 6
         surgery.Implantation(),  # 7
-        opto.OptoProtocol(),  # 8
-        opto.OptoEvent(),  # 9
+        surgery.Implantation.Coordinate(),  # 8
+        opto.OptoProtocol(),  # 9
+        opto.OptoEvent(),  # 10
     ]
 
     ingest_csv_to_table(csvs, tables, skip_duplicates=skip_duplicates, verbose=verbose)

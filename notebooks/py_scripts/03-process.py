@@ -103,6 +103,7 @@ surgery.CoordinateReference()
 surgery.Hemisphere()
 
 
+# +
 surgery.BrainRegion.insert1(
     dict(region_acronym="dHP", region_name="Dorsal Hippocampus")
 )
@@ -111,9 +112,19 @@ surgery.Implantation.insert1(
         subject="subject3",
         implant_date="2022-04-01 12:13:14",
         implant_type="opto",
-        region_acronym="dHP",
-        hemisphere="left",
+        target_region="dHP",
+        target_hemisphere="left",
         surgeon="user1",
+    )
+)
+
+surgery.Implantation.Coordinate.insert1(
+    dict(
+        subject="subject3",
+        implant_date="2022-04-01 12:13:14",
+        implant_type="opto",
+        target_region="dHP",
+        target_hemisphere="left",
         ap="-7.9",  # anterior-posterior distance in mm
         ap_ref="bregma",
         ml="-1.8",  # medial axis distance in mm
@@ -126,6 +137,7 @@ surgery.Implantation.insert1(
     )
 )
 
+# -
 
 # ### Insert into `session` schema
 #
@@ -163,8 +175,6 @@ opto.OptoWaveform.Square.insert1(
 )
 
 
-# +
-
 opto.OptoStimParams.insert1(
     dict(
         opto_params_id=1,
@@ -176,7 +186,6 @@ opto.OptoStimParams.insert1(
     )
 )
 
-# -
 
 # Next, we'll describe the session in which these parameters were used with `OptoProtocol`
 #
@@ -189,8 +198,8 @@ opto.OptoProtocol.insert1(
         opto_params_id="1",
         implant_date="2022-04-01 12:13:14",
         implant_type="opto",
-        region_acronym="dHP",
-        hemisphere="left",
+        target_region="dHP",
+        target_hemisphere="left",
         device="OPTG_4",
     )
 )
@@ -250,6 +259,27 @@ from workflow_optogenetics.ingest import ingest_all
 ingest_all()
 
 # -
+
+# ## Events
+#
+# The above `ingest_all()` also added behavioral events we can example in conjunction with optogenetic events. For convenience, these stimulation events are also reflected in the Block design of Element Event.
+#
+
+# +
+from workflow_optogenetics.pipeline import event, trial
+
+events_by_block = (
+    trial.BlockTrial * trial.TrialEvent * trial.Block.Attribute
+    & "attribute_name='stimulation'"
+)
+events_by_block
+# -
+
+# We can readily compare the count of events or event types across 'on' and 'off' stimulation conditions.
+
+events_by_block & "attribute_value='on'"
+
+events_by_block & "attribute_value='off'"
 
 # ## Next Steps
 #

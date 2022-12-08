@@ -119,3 +119,4 @@ Diagram.ipynb
 
 # docker
 .env
+tests/user_dat*
