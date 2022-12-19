@@ -115,6 +115,8 @@ temp*
 **/.#*
 docker-compose.yml
 Diagram.ipynb
+*swp
 
 # docker
 .env
+tests/user_dat*

@@ -1,21 +1,31 @@
-from . import dj_config, pipeline
+__all__ = ["pipeline"]
 
 
-def test_generate_pipeline(pipeline):
-    subject = pipeline['subject']
-    imaging = pipeline['imaging']
-    scan = pipeline['scan']
-    session = pipeline['session']
-    Equipment = pipeline['Equipment']
+def test_upstream_pipeline(pipeline):
+    session = pipeline["session"]
+    surgery = pipeline["surgery"]
+    subject = pipeline["subject"]
 
-    subject_tbl, *_ = session.Session.parents(as_objects=True)
+    # test connection Subject->Session
+    assert subject.Subject.full_table_name == session.Session.parents()[0]
+    assert subject.Subject.full_table_name in surgery.Implantation.parents()
 
-    # test elements connection from lab, subject to Session
-    assert subject_tbl.full_table_name == subject.Subject.full_table_name
 
-    # test elements connection from Session to scan, imaging
-    session_tbl, equipment_tbl, _ = scan.Scan.parents(as_objects=True)
-    assert session_tbl.full_table_name == session.Session.full_table_name
-    assert equipment_tbl.full_table_name == Equipment.full_table_name
-    assert 'mask_npix' in imaging.Segmentation.Mask.heading.secondary_attributes
-    assert 'activity_trace' in imaging.Activity.Trace.heading.secondary_attributes
+def test_opto_pipeline(pipeline):
+    session = pipeline["session"]
+    surgery = pipeline["surgery"]
+    opto = pipeline["opto"]
+    Device = pipeline["Device"]
+
+    # test connection opto.VideoRec -> schema children
+    opto_parent_links = opto.OptoProtocol.parents()
+    opto_parent_list = [
+        session.Session,
+        opto.OptoStimParams,
+        surgery.Implantation,
+        Device,
+    ]
+    for parent in opto_parent_list:
+        assert (
+            parent.full_table_name in opto_parent_links
+        ), f"opto.OptoProtocol.parents() did not include {parent.full_table_name}"
