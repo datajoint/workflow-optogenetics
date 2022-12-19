@@ -134,7 +134,7 @@ def ingest_opto(
     """Ingest optogenetic stimulation and protocol information.
 
     Args:
-        opto_survery_csv_path (str, optional): Relative path to implantation info CSV.
+        opto_surgery_csv_path (str, optional): Relative path to implantation info CSV.
             Defaults to "./user_data/opto_surgeries.csv".
         opto_session_csv_path (str, optional): Relative path to CSV with opto session
             information. Defaults to "./user_data/opto_sessions.csv".

@@ -21,6 +21,7 @@ __all__ = [
     "subject",
     "surgery",
     "trial",
+    "Device",
     "Experimenter",
     "Implantation",
     "Lab",
