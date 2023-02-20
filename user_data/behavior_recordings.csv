@@ -1,0 +1,6 @@
+subject,session_id,filepath
+subject3,1,./user_data/blocks.csv
+subject3,1,./user_data/trials.csv
+subject3,1,./user_data/events.csv
+subject3,1,./user_data/opto_session.csv
+subject3,1,./user_data/opto_surgery.csv

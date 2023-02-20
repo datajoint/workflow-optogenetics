@@ -1,0 +1,9 @@
+subject,session_id,block_id,block_start_time,block_stop_time,attribute_name,attribute_value
+subject3,1,1,0,241,stimulation,off
+subject3,1,2,241,482,stimulation,on
+subject3,1,3,482,723,stimulation,on
+subject3,1,4,723,964,stimulation,off
+subject3,1,1,0,241,environment,light
+subject3,1,2,241,482,environment,dark
+subject3,1,3,482,723,environment,light
+subject3,1,4,723,964,environment,dark
