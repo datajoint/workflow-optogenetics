@@ -14,7 +14,7 @@ def test_opto_pipeline(pipeline):
     opto = pipeline["opto"]
     Device = pipeline["Device"]
 
-    # test connection opto.VideoRec -> schema children
+    # test connection opto.OptoProtocol -> schema children
     opto_parent_links = opto.OptoProtocol.parents()
     opto_parent_list = [
         session.Session,
