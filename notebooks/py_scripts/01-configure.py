@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3.9.13 ('ele')
 #     language: python
@@ -23,12 +23,10 @@
 
 # +
 import os
-
 import datajoint as dj
 
 if os.path.basename(os.getcwd()) == "notebooks":
     os.chdir("..")
-
 # -
 
 # ## Setup - Credentials
@@ -41,8 +39,7 @@ import getpass
 
 dj.config["database.host"] = "{YOUR_HOST}"  # CodeBook users should omit this
 dj.config["database.user"] = "{YOUR_USERNAME}"
-dj.config["database.password"] = getpass.getpass()  # enter the password securily
-
+dj.config["database.password"] = getpass.getpass()  # enter the password securely
 # -
 
 # You should be able to connect to the database at this stage.
@@ -50,16 +47,15 @@ dj.config["database.password"] = getpass.getpass()  # enter the password securil
 
 dj.conn()
 
-
 # ## Setup - `dj.config['custom']`
 #
 # The major component of the current workflow is Element Optogenetics (see [GitHub repository](https://github.com/datajoint/element-optogenetics) and [documentation](https://datajoint.com/docs/elements/element-optogenetics)). Many Elements require configurations in the field `custom` in `dj.config`:
 #
 # ### Database prefix
 #
-# Giving a prefix to schemas could help when configuring database privileges. If we set the prefix to `neuro_`, every schema created with the current workflow will start with `neuro_`, e.g. `neuro_lab`, `neuro_subject`, etc.
+# Giving a prefix to schemas could help when configuring database privileges. If we set the prefix to `neuro_`, e.g. `neuro_lab`, `neuro_subject`, etc.
 #
-# The prefix could be configurated to your username in `dj.config` as follows.
+# The prefix could be configured to your username in `dj.config` as follows.
 #
 
 username_as_prefix = dj.config["database.user"] + "_"
@@ -74,7 +70,6 @@ dj.config["custom"] = {"database.prefix": username_as_prefix}
 
 # dj.config.save_local()
 dj.config.save_global()
-
 
 # ## Next Step
 #

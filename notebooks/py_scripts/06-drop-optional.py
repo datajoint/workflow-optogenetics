@@ -30,14 +30,14 @@ if os.path.basename(os.getcwd()) == "notebooks":
 # -
 
 from workflow_optogenetics.pipeline import (
-    Device,
-    event,
-    lab,
+    trial,
     opto,
+    Device,
+    surgery,
+    event,
     session,
     subject,
-    surgery,
-    trial,
+    lab,
 )
 
 # +

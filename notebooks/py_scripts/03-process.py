@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3.9.13 ('ele')
 #     language: python
@@ -31,7 +31,6 @@ import os
 
 if os.path.basename(os.getcwd()) == "notebooks":
     os.chdir("..")
-
 # -
 
 # ## `pipeline.py`
@@ -40,8 +39,7 @@ if os.path.basename(os.getcwd()) == "notebooks":
 #
 
 import datajoint as dj
-
-from workflow_optogenetics.pipeline import Device, lab, opto, session, subject, surgery
+from workflow_optogenetics.pipeline import lab, subject, surgery, session, opto, Device
 
 # ## Schema diagrams
 #
@@ -54,7 +52,6 @@ from workflow_optogenetics.pipeline import Device, lab, opto, session, subject, 
     + dj.Diagram(surgery.Implantation)
     + dj.Diagram(opto)
 )
-
 
 # ## Inserting data
 #
@@ -72,17 +69,14 @@ Device.insert1(
     )
 )
 
-
 lab.User.insert1(
     dict(user="User1")
 )  # For the surgeon attribute in surgery.Implantation
-
 
 # ### `subject` schema
 #
 
 subject.Subject.heading
-
 
 subject.Subject.insert1(
     dict(
@@ -93,15 +87,12 @@ subject.Subject.insert1(
     )
 )
 
-
 # In order to conduct optogenetic stimulation, our subject must have an implant in the target brain region. Again, some `Lookup` tables have useful default content.
 #
 
 surgery.CoordinateReference()
 
-
 surgery.Hemisphere()
-
 
 # +
 surgery.BrainRegion.insert1(
@@ -136,7 +127,6 @@ surgery.Implantation.Coordinate.insert1(
         beta=None,  # degree rotation about shank [-180, 180] wrt anterior
     )
 )
-
 # -
 
 # ### Insert into `session` schema
@@ -144,16 +134,13 @@ surgery.Implantation.Coordinate.insert1(
 
 session.Session.describe()
 
-
 session.Session.heading
-
 
 session_key = dict(
     subject="subject3", session_id="1", session_datetime="2022-04-04 12:13:14"
 )
 session.Session.insert1(session_key)
 session.Session()
-
 
 # ### Insert into `opto` schema
 #
@@ -174,7 +161,6 @@ opto.OptoWaveform.Square.insert1(
     dict(waveform_name="square_10", on_proportion=0.10, off_proportion=0.90)
 )
 
-
 opto.OptoStimParams.insert1(
     dict(
         opto_params_id=1,
@@ -185,7 +171,6 @@ opto.OptoStimParams.insert1(
         duration=241,
     )
 )
-
 
 # Next, we'll describe the session in which these parameters were used with `OptoProtocol`
 #
@@ -203,7 +188,6 @@ opto.OptoProtocol.insert1(
         device="OPTG_4",
     )
 )
-
 
 # We can describe the timing of these stimulations in `OptoEvent`.
 #
@@ -227,7 +211,6 @@ opto.OptoEvent.insert(
     ]
 )
 
-
 # To store more experimental timing information, see documentation for [Element Event](https://datajoint.com/docs/elements/element-event/).
 #
 
@@ -247,7 +230,6 @@ opto.OptoEvent.insert(
 from workflow_optogenetics.ingest import ingest_subjects
 
 help(ingest_subjects)
-
 # -
 
 # By default, these functions pull from files in the `user_files` directory. We can run each of these in succession with the default parameters with `ingest_all`.
@@ -257,7 +239,6 @@ help(ingest_subjects)
 from workflow_optogenetics.ingest import ingest_all
 
 ingest_all()
-
 # -
 
 # ## Events
