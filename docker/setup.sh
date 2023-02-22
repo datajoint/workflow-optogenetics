@@ -1,7 +1,7 @@
 #! /bin/bash
 export $(grep -v '^#' /main/.env | xargs)
 
-echo "INSALL OPTION:" $INSTALL_OPTION
+echo "INSTALL OPTION:" $INSTALL_OPTION
 cd /main/
 # all local installs, mapped from host
 if [ "$INSTALL_OPTION" == "local-all" ]; then
@@ -31,7 +31,3 @@ if [[ "$TEST_CMD" == *pytest* ]]; then
     pip install pytest
     pip install pytest-cov
 fi
-
-# additional installs for running DLC
-pip install torch
-pip install ffmpeg

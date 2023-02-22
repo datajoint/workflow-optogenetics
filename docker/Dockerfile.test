@@ -9,8 +9,6 @@ RUN /entrypoint.sh echo "Installed dependencies."
 WORKDIR /main/workflow-optogenetics
 
 # Always get interface/djarchive
-RUN pip install --no-deps "element-interface@git+https://github.com/datajoint/element-interface"
-RUN pip install --no-deps "djarchive-client@git+https://github.com/datajoint/djarchive-client"
 
 # Always move local - conditional install in setup.sh
 COPY --chown=anaconda:anaconda ./element-lab/ /main/element-lab/

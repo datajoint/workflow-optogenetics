@@ -9,4 +9,4 @@ combined with other Elements to assemble a fully functional pipeline.
 Installation and usage instructions can be found at the
 [Element documentation](datajoint.com/docs/elements/element-optogenetics).
 
-![element-Optogenetics diagram](https://raw.githubusercontent.com/datajoint/element-Optogenetics/main/images/diagram_opto.svg)
+![diagram](https://raw.githubusercontent.com/datajoint/element-optogenetics/main/images/diagram_flowchart.svg)
