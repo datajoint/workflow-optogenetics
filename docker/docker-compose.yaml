@@ -29,7 +29,7 @@ services:
       dockerfile: ./workflow-optogenetics/docker/Dockerfile.test
       args:
         - GITHUB_USERNAME=${GITHUB_USERNAME}
-    image: workflow-optogenetics:0.0.0
+    image: workflow-optogenetics:0.1.0
     container_name: workflow-optogenetics
     environment:
       - DJ_HOST=db

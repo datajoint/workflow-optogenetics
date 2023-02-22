@@ -9,7 +9,7 @@ if [ "$INSTALL_OPTION" == "local-all" ]; then
         pip install -e ./element-${f}
     done
     pip install -e ./workflow-optogenetics
-# all except workflow pip installed
+# Install all from GitHub except for (optionally) optogenetics Element and Workflow
 else
     pip install git+https://github.com/${GITHUB_USERNAME}/element-lab.git
     pip install git+https://github.com/${GITHUB_USERNAME}/element-animal.git

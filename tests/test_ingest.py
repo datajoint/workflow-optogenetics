@@ -1,6 +1,6 @@
 """Tests ingestion into schema tables: Lab, Subject, Session
-    1. Assert length of populating data conftest
-    2. Assert exact matches of inserted data fore key tables
+    1. Assert length of data populated with conftest
+    2. Assert exact matches of inserted data for key tables
 """
 
 
