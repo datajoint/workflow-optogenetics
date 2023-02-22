@@ -7,6 +7,6 @@ pipeline for data storage and processing with corresponding database tables that
 combined with other Elements to assemble a fully functional pipeline.
 
 Installation and usage instructions can be found at the
-[Element documentation](datajoint.com/docs/elements/element-optogenetics).
+[Element documentation](https://datajoint.com/docs/elements/element-optogenetics).
 
 ![diagram](https://raw.githubusercontent.com/datajoint/element-optogenetics/main/images/diagram_flowchart.svg)
