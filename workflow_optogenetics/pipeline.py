@@ -3,7 +3,7 @@ from element_animal.subject import Subject  # Dependency for session schema
 from element_animal.surgery import Implantation  # Dependency for opto schema
 from element_event import event, trial
 from element_lab import lab
-from element_lab.lab import User  # Alias for session schema
+from element_lab.lab import User as Experimenter  # Alias for session schema
 from element_lab.lab import Lab, Project, Protocol, Source
 from element_optogenetics import optogenetics as opto
 from element_session import session_with_id as session
