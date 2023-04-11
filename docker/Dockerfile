@@ -8,7 +8,6 @@ RUN /entrypoint.sh echo "Installed dependencies."
 
 WORKDIR /main/workflow-optogenetics
 
-
 # Always move local - conditional install in setup.sh
 COPY --chown=anaconda:anaconda ./element-lab/ /main/element-lab/
 COPY --chown=anaconda:anaconda ./element-animal/ /main/element-animal/
