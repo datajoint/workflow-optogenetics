@@ -26,7 +26,7 @@ services:
       optogenetics:
     build:
       context: ../../
-      dockerfile: ./workflow-optogenetics/docker/Dockerfile.test
+      dockerfile: ./workflow-optogenetics/docker/Dockerfile
       args:
         - GITHUB_USERNAME=${GITHUB_USERNAME}
     image: workflow-optogenetics:0.1.0
