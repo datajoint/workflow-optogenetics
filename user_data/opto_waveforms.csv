@@ -1,2 +1,0 @@
-waveform_type,waveform_name,waveform_description,on_proportion,off_proportion,opto_params_id,wavelength,light_intensity,frequency,duration
-square,square_10,Square waveform with 10-90 on-off cycle,.10,.90,1,470,10.2,1,241

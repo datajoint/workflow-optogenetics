@@ -1,2 +1,0 @@
-subject,implant_date,reference,region_acronym,region_name,hemisphere,implant_type,ap,ap_ref,ml,ml_ref,dv,dv_ref,theta,phi,user,surgeon,target_region,target_hemisphere
-subject3,2022-04-01 12:13:14,bregma,dHP,Dorsal Hippocampus,left,opto,-7.9,bregma,-1.8,bregma,5,skull_surface,11.5,0,user1,user1,dHP,left
