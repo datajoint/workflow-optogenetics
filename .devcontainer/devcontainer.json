@@ -1,0 +1,26 @@
+{
+	"name": "Tutorial",
+	"dockerComposeFile": "docker-compose.yaml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	},
+	"onCreateCommand": "pip install -e . && MYSQL_VER=8.0 docker compose down && MYSQL_VER=8.0 docker compose up --build --wait",
+	"postStartCommand": "docker volume prune -f",
+	"hostRequirements": {
+		"cpus": 2,
+		"memory": "4gb",
+		"storage": "8gb"
+	},
+	"forwardPorts": [
+		3306
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python"
+			]
+		}
+	}
+}
