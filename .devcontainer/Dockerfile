@@ -19,5 +19,3 @@ ENV DJ_USER root
 ENV DJ_PASS simple
 
 ENV DATABASE_PREFIX neuro_
-
-USER vscode
