@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.9-bullseye
+FROM mcr.microsoft.com/devcontainers/python:3.7-bullseye
 
 RUN \
     # dev setup
