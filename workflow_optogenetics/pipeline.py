@@ -2,8 +2,7 @@ from element_animal import subject, surgery
 from element_animal.subject import Subject  # Dependency for session schema
 from element_animal.surgery import Implantation  # Dependency for optogenetics schema
 from element_lab import lab
-from element_lab.lab import User as Experimenter  # Alias for session schema
-from element_lab.lab import Lab, Project, Protocol, Source
+from element_lab.lab import Lab, Project, Protocol, Source, User
 from element_optogenetics import optogenetics
 from element_session import session_with_id as session
 from element_session.session_with_id import Session
@@ -34,6 +33,8 @@ __all__ = [
 lab.activate(db_prefix + "lab")
 subject.activate(db_prefix + "subject", linking_module=__name__)
 surgery.activate(db_prefix + "surgery", linking_module=__name__)
+
+Experimenter = User
 session.activate(db_prefix + "session", linking_module=__name__)
 
 # Activate "optogenetics" schema -------------
