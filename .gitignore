@@ -123,3 +123,6 @@ tests/user_dat*
 
 # pytest
 .pytest_cache/
+
+# vscode
+*.code-workspace
