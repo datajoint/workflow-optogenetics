@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 long_description = """"
 # Workflow for optogenetics research.
 
-Build a complete imaging workflow using the DataJoint Elements
+Build a complete optogenetics workflow using the DataJoint Elements
 + [element-lab](https://github.com/datajoint/element-lab)
 + [element-animal](https://github.com/datajoint/element-animal)
 + [element-session](https://github.com/datajoint/element-session)
