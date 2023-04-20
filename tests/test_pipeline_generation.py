@@ -6,7 +6,7 @@ def test_upstream_pipeline(pipeline):
     surgery = pipeline["surgery"]
     subject = pipeline["subject"]
 
-    # Test connection from Subject to parent tables
+    # Test connection from Subject to downstream tables
     assert subject.Subject.full_table_name in session.Session.parents()
     assert subject.Subject.full_table_name in surgery.Implantation.parents()
 
