@@ -1,3 +1,7 @@
+> ⚠️ **This repository is archived and no longer maintained.**
+> Example workflow superseded by elements.
+> For current DataJoint development, see [element-optogenetics](https://github.com/datajoint/element-optogenetics).
+
 # DataJoint Workflow for Optogenetics
 
 The DataJoint Workflow for Optogenetics combines four DataJoint Elements for
